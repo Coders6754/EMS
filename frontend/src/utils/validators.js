@@ -112,7 +112,7 @@ export const validatePassword = (password) => {
   }
 
   // Check for at least one special character
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(passwordStr)) {
+  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(passwordStr)) {
     return { valid: false, message: 'Password must contain at least one special character (!@#$%^&* etc.)' };
   }
 

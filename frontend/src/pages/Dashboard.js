@@ -21,6 +21,7 @@ const Dashboard = () => {
     if (user?.role === 'Employee' && user?.employeeId) {
       fetchEmployeeLeaveBalance();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const fetchDashboardData = async () => {
