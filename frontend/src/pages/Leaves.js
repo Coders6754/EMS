@@ -15,6 +15,7 @@ const Leaves = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const [loadingAction, setLoadingAction] = useState(null); // 'submit', 'approve', 'reject', 'delete'
   const [formData, setFormData] = useState({
     employee: '',
@@ -37,25 +38,19 @@ const Leaves = () => {
         setFormData(prev => ({ ...prev, employee: ownEmployee._id }));
       }
     }
-  }, [user, employees]);
-
-  useEffect(() => {
-    // Auto-select employee's own record if they are an employee
-    if (user?.role === 'Employee' && user?.employeeId && employees.length > 0) {
-      const ownEmployee = employees.find(emp => emp._id === user.employeeId._id || emp._id === user.employeeId);
-      if (ownEmployee && !formData.employee) {
-        setFormData(prev => ({ ...prev, employee: ownEmployee._id }));
-      }
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, employees]);
 
   const fetchLeaves = async () => {
     try {
+      setFetching(true);
       const res = await API.get('/leaves');
       setLeaves(res.data);
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to load leave requests. Please refresh the page and try again.';
       toast.error(errorMessage);
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -157,6 +152,12 @@ const Leaves = () => {
 
   return (
     <div className="space-y-6">
+      {fetching && (
+        <Loader 
+          message="Loading leave requests..."
+          fullScreen={true}
+        />
+      )}
       {loading && (
         <Loader 
           message={

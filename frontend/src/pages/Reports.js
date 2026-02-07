@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import API from '../utils/api';
+import Loader from '../components/Loader';
 
 const Reports = () => {
   const [reportType, setReportType] = useState('employees');
@@ -11,6 +12,7 @@ const Reports = () => {
     status: ''
   });
   const [departments, setDepartments] = useState([]);
+  const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
     fetchDepartments();
@@ -18,6 +20,7 @@ const Reports = () => {
 
   useEffect(() => {
     fetchReport();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reportType]);
 
   const fetchDepartments = async () => {
@@ -31,6 +34,7 @@ const Reports = () => {
 
   const fetchReport = async (filterParams = null) => {
     try {
+      setFetching(true);
       let url = `/reports/${reportType}`;
       const params = new URLSearchParams();
       const activeFilters = filterParams || filters;
@@ -46,6 +50,8 @@ const Reports = () => {
       setData(res.data);
     } catch (error) {
       console.error('Error fetching report:', error);
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -426,6 +432,12 @@ const Reports = () => {
 
   return (
     <div className="space-y-6">
+      {fetching && (
+        <Loader 
+          message={`Loading ${reportType} report...`}
+          fullScreen={true}
+        />
+      )}
       <div>
         <h1 className="text-3xl font-bold text-gray-800">Reports & Analytics</h1>
         <p className="text-gray-500 mt-1">Generate and analyze organizational reports</p>

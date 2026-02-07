@@ -3,6 +3,7 @@ import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Toolti
 import API from '../utils/api';
 import LeaveWidget from '../components/LeaveWidget';
 import { AuthContext } from '../context/AuthContext';
+import Loader from '../components/Loader';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
@@ -13,6 +14,7 @@ const Dashboard = () => {
   const [projectsByStatus, setProjectsByStatus] = useState([]);
   const [leavesAnalysis, setLeavesAnalysis] = useState({ byType: [], byStatus: [] });
   const [employeeLeaveBalance, setEmployeeLeaveBalance] = useState(null);
+  const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
     fetchDashboardData();
@@ -23,6 +25,7 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
+      setFetching(true);
       const [summaryRes, empByDeptRes, projStatusRes, leavesRes] = await Promise.all([
         API.get('/dashboard/summary'),
         API.get('/dashboard/employees-by-department'),
@@ -39,6 +42,8 @@ const Dashboard = () => {
       });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -56,6 +61,12 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
+      {fetching && (
+        <Loader 
+          message="Loading dashboard data..."
+          fullScreen={true}
+        />
+      )}
       <div>
         <h1 className="text-3xl font-bold text-gray-800">Dashboard Overview</h1>
         <p className="text-gray-500 mt-1">Monitor your organization's key metrics and performance</p>

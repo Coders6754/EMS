@@ -45,27 +45,8 @@ app.use(async (req, res, next) => {
 // Root route
 app.get('/', (req, res) => {
   res.json({
-    message: 'EMS Backend API',
-    status: 'running',
-    version: '1.0.0',
-    endpoints: {
-      auth: '/api/auth',
-      employees: '/api/employees',
-      departments: '/api/departments',
-      projects: '/api/projects',
-      invoices: '/api/invoices',
-      leaves: '/api/leaves',
-      reports: '/api/reports',
-      dashboard: '/api/dashboard',
-      health: '/api/health'
-    },
-    timestamp: new Date().toISOString()
+    message: 'EMS Backend Running'
   });
-});
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 app.use('/api/auth', require('./routes/auth'));

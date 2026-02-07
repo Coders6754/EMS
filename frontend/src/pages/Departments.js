@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import API from '../utils/api';
 import Modal from '../components/Modal';
+import Loader from '../components/Loader';
 
 const Departments = () => {
   const [departments, setDepartments] = useState([]);
@@ -10,6 +11,7 @@ const Departments = () => {
   const [editId, setEditId] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [fetching, setFetching] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     head: '',
@@ -23,10 +25,13 @@ const Departments = () => {
 
   const fetchDepartments = async () => {
     try {
+      setFetching(true);
       const res = await API.get('/departments');
       setDepartments(res.data);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to load departments. Please try again.');
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -112,6 +117,12 @@ const Departments = () => {
 
   return (
     <div className="space-y-6">
+      {fetching && (
+        <Loader 
+          message="Loading departments..."
+          fullScreen={true}
+        />
+      )}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Department Management</h1>

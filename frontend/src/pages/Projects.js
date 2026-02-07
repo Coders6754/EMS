@@ -12,6 +12,7 @@ const Projects = () => {
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [formData, setFormData] = useState({
@@ -31,11 +32,14 @@ const Projects = () => {
 
   const fetchProjects = async () => {
     try {
+      setFetching(true);
       const res = await API.get('/projects');
       setProjects(res.data);
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to load projects. Please refresh the page and try again.';
       toast.error(errorMessage);
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -154,6 +158,12 @@ const Projects = () => {
 
   return (
     <div className="space-y-6">
+      {fetching && (
+        <Loader 
+          message="Loading projects..."
+          fullScreen={true}
+        />
+      )}
       {loading && (
         <Loader 
           message={

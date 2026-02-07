@@ -21,6 +21,7 @@ const Invoices = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
     fetchInvoices();
@@ -29,11 +30,14 @@ const Invoices = () => {
 
   const fetchInvoices = async () => {
     try {
+      setFetching(true);
       const res = await API.get('/invoices');
       setInvoices(res.data);
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to load invoices. Please refresh the page and try again.';
       toast.error(errorMessage);
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -159,6 +163,12 @@ const Invoices = () => {
 
   return (
     <div className="space-y-6">
+      {fetching && (
+        <Loader 
+          message="Loading invoices..."
+          fullScreen={true}
+        />
+      )}
       {loading && (
         <Loader 
           message={

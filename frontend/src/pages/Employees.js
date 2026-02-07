@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import API from '../utils/api';
 import { validateEmail, validatePhone, validatePassword } from '../utils/validators';
 import Modal from '../components/Modal';
-import { ButtonLoader } from '../components/Loader';
+import Loader, { ButtonLoader } from '../components/Loader';
 
 const Employees = () => {
   const navigate = useNavigate();
@@ -30,6 +30,7 @@ const Employees = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
     fetchEmployees();
@@ -38,11 +39,14 @@ const Employees = () => {
 
   const fetchEmployees = async () => {
     try {
+      setFetching(true);
       const res = await API.get('/employees');
       setEmployees(res.data);
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to load employees. Please refresh the page and try again.';
       toast.error(errorMessage);
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -169,6 +173,12 @@ const Employees = () => {
 
   return (
     <div className="space-y-6">
+      {fetching && (
+        <Loader 
+          message="Loading employees..."
+          fullScreen={true}
+        />
+      )}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Employee Management</h1>
